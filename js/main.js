@@ -2,14 +2,17 @@ var answers;
 var filteredAnswers;
 
 var filters = [
-  "Relacionamento emocional com dinheiro",
-  "24 - Em qual estado emocional você gasta mais?",
   "2- Qual a sua idade?",
   "4 - Qual é sua raça?",
-  "Qual o seu gênero?"
+  "Qual o seu gênero?",
+  "7 - Você se considera rico ou pobre?",
+  "24 - Em qual estado emocional você gasta mais?",
+  "Relacionamento emocional com dinheiro"
 ];
 
 var questions = [
+  "2- Qual a sua idade?",
+  "4 - Qual é sua raça?",
   "7 - Você se considera rico ou pobre?",
   "8 - Você ajuda a pagar as contas da sua casa?",
   "9 - Quem é o principal responsável por bancar a sua casa?",
@@ -20,9 +23,6 @@ var questions = [
   "14 - Você possui alguma dívida?",
   "15 - Quantas vezes por mês você usa cartão de crédito?",
   "16 - Quantas vezes por mês você faz compras pela internet?",
-  "20 - Dessas categorias, em quais você não faz questão de economizar?",
-  "21 - Dessas categorias, em quais você gastaria mais se seu salário fosse 4 vezes maior?",
-  "22 - Que problemas você resolveria se seu salário fosse 4 vezes maior?",
   "23 - Qual uso do dinheiro te dá mais prazer?",
   "24 - Em qual estado emocional você gasta mais?",
   "25 - No seu orçamento mensal, R$ 100 faz:",
@@ -192,7 +192,7 @@ function processFilter(data, filterOptions) {
     }
   }
   
-  document.getElementById('record-counter').innerHTML = filteredData.length;
+  document.getElementById('record-counter').innerHTML = "Número de respostas: "+filteredData.length;
   return filteredData;
 }
 

@@ -87,7 +87,8 @@ var pieGraphData = [
 var columnGraphData = [
   {
     type: "stackedColumn",
-    toolTipContent:"{label}: {y}",
+    showInLegend: true,
+    toolTipContent:"{legendText}: {y}",
     dataPoints: []
   }
 ];
@@ -200,57 +201,28 @@ function create2dDataSets(dataCounter) {
 
   for(var i in orderedAnswers) {
     var yAxis = orderedAnswers[i];
-    var thisDataSet;
 
     if(isObject(dataCounter[yAxis])) {
-      thisDataSet = [];
+      var thisDataSet = [];
       for(var xAxis in dataCounter[yAxis]) {
         thisDataSet.push({ y: dataCounter[yAxis][xAxis], legendText: yAxis, label: xAxis });
       }
       thisDataSet.sort(function(a, b) {
         return (a.label > b.label) ? 1 : -1;
       });
+      data.push(thisDataSet);
     } else {
-      thisDataSet = { y: dataCounter[yAxis], legendText: yAxis, label: yAxis };
+      data[0] = data[0] || [];
+      var thisDataSet = { y: dataCounter[yAxis], legendText: yAxis, label: yAxis };
+      data[0].push(thisDataSet);
     }
-
-    data.push(thisDataSet);
   }
-  return data;
-}
-
-function processQuestions2d(selectedQuestions, answers) {
-  selectedQuestions = selectedQuestions || getSelectedQuestions();
-  answers = answers || filteredAnswers;
-
-  var dataCounter = countAnswers(selectedQuestions, answers);
-  var data = create2dDataSets(dataCounter);
-
   return data;
 }
 
 function processQuestions(selectedQuestions, answers) {
-  var dataCounter = {};
-  var data = [];
-
-  var question = selectedQuestions[0];
-
-  for(var p in answers) {
-    var thisAnswer = answers[p][question];
-    if(dataCounter.hasOwnProperty(thisAnswer)) {
-      dataCounter[thisAnswer] += 1;
-    } else {
-      dataCounter[thisAnswer] = 1;
-    }
-  }
-
-  for(var p in dataCounter) {
-    data.push({ y: dataCounter[p], legendText: p, label: p });
-  }
-
-  data.sort(function(a, b) {
-    return (a.legendText > b.legendText) ? 1 : -1;
-  });
+  var dataCounter = countAnswers(selectedQuestions, answers);
+  var data = create2dDataSets(dataCounter);
   return data;
 }
 
@@ -359,10 +331,10 @@ function getSelectedQuestions() {
 function drawGraph() {
   var selectedQuestions = getSelectedQuestions();
   var chartTitle = "";
-  var values;
+  var dataSets;
 
   if(selectedQuestions.length > 0) {
-    values = processQuestions(selectedQuestions, filteredAnswers);
+    dataSets = processQuestions(selectedQuestions, filteredAnswers);
   }
 
   for(var i in selectedQuestions) {
@@ -372,13 +344,16 @@ function drawGraph() {
 
   if(selectedQuestions.length > 1) {
     myGraph.set('data', []);
-    for(var i in selectedQuestions) {
+    for(var i in dataSets) {
       myGraph.addTo('data', columnGraphData.slice());
     }
   } else {
     myGraph.set('data', pieGraphData);
   }
-  myGraph.data[0].set('dataPoints', values);
+
+  for(var i in dataSets) {
+    myGraph.data[i].set('dataPoints', dataSets[i]);
+  }
 }
 
 function processEmotions(answers) {

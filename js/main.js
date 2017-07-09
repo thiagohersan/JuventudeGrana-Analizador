@@ -51,7 +51,6 @@ var questions = [
   "28 - Na hora de pagar a conta do bar, você:",
   "29 - Como você avalia sua relação com dinheiro?",
   "30 - Com quem você aprendeu?",
-  "31 - O que você têm mais dificuldade de entender no sistema bancário?",
   "32 - Você consegue juntar grana?",
   "33 - Você procura viver de modo a depender menos do dinheiro?",
   "A falta de dinheiro me impede de estar em lugares que eu gostaria de estar.",
@@ -70,9 +69,16 @@ var questions = [
   "Sou mais criterioso para gastar a grana que ganhei trabalhando do que o dinheiro que veio fácil."
 ];
 
+var questionForms = ['question-0', 'question-1'];
+
 function initializeGraph(){
   pieGraph = new CanvasJS.Chart("chart-container", {
-    title: { text: "" },
+    title: {
+      text: "",
+      fontFamily: "Helvetica",
+      fontSize: 32,
+      fontWeight: "bolder"
+    },
     legend: {
       verticalAlign: "center",
       horizontalAlign: "left",
@@ -97,19 +103,26 @@ function initializeGraph(){
 }
 
 window.onload = function() {
-  loadJSON("data/20170708.json", function(json) {
+  loadJSON("data/baby.json", function(json) {
     answers = processEmotions(JSON.parse(json));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());
     questions = questions.concat(emotionDuos);
-    createQuestionForm(questions, 'question-x');
+
+    for(var i in questionForms) {
+      createQuestionForm(questions, questionForms[i]);
+    }
 
     initializeGraph();
   });
 }
 
-function createQuestionForm(questions, elementId) {
-  var selectElement = document.getElementById(elementId);
+function createQuestionForm(questions, questionNameId) {
+  var questionContainer = document.getElementById('question-container');
+
+  var selectElement = document.createElement('select');
+  selectElement.setAttribute('name', questionNameId);
+  selectElement.setAttribute('id', questionNameId);
   selectElement.setAttribute('onchange', 'drawGraph()');
   selectElement.innerHTML = '';
 
@@ -124,11 +137,17 @@ function createQuestionForm(questions, elementId) {
     thisOption.innerHTML = questions[q];
     selectElement.appendChild(thisOption);
   }
+
+  questionContainer.appendChild(selectElement);
 }
 
-function processQuestion(question, answers) {
+function processQuestion(selectedQuestions, answers) {
   var dataCounter = {};
   var data = [];
+
+  // TODO: fix
+  var question = selectedQuestions[0];
+  //
 
   for(p in answers) {
     var thisAnswer = answers[p][question];
@@ -242,12 +261,25 @@ function updateFilter() {
 
 function drawGraph() {
   var values;
-  var question = document.getElementById('question-x').value;
-  pieGraph.title.set('text', '', false);
-  if(question != "null") {
-    values = processQuestion(question, filteredAnswers);
-    pieGraph.title.set('text', question, false);
+  var selectedQuestions = [];
+
+  for(var i in questionForms) {
+    var thisQuestion = document.getElementById(questionForms[i]).value;
+    if(thisQuestion != "null"){
+      selectedQuestions.push(thisQuestion);
+    }
   }
+
+  pieGraph.title.set('text', '', false);
+  if(selectedQuestions.length > 0) {
+    values = processQuestion(selectedQuestions, filteredAnswers);
+    var chartTitle = "";
+    for(var i in selectedQuestions) {
+      chartTitle += " ❤ "+selectedQuestions[i];
+    }
+    pieGraph.title.set('text', chartTitle.substr(3), false);
+  }
+
   pieGraph.data[0].set('dataPoints', values, false);
   pieGraph.render();
 }

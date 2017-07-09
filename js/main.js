@@ -151,15 +151,91 @@ function createQuestionForm(questions, questionNameId) {
   questionContainer.appendChild(selectElement);
 }
 
+function orderKeys(obj) {
+  var ordered = [];
+  for(var k in obj) {
+    ordered.push(k);
+  }
+  ordered.sort(function(a, b) {
+    return (a > b) ? 1 : -1;
+  });
+  return ordered;
+}
+
+function isObject(obj) {
+  return obj === Object(obj);
+}
+
+function countAnswers(selectedQuestions, answers) {
+  var dataCounter = {};
+
+  for(var p in answers) {
+    var thisDataSet = dataCounter;
+
+    for(var q = (selectedQuestions.length - 1); q >= 0; q--) {
+      var thisQuestion = selectedQuestions[q];
+      var thisAnswer = answers[p][thisQuestion];
+
+      if(!thisDataSet.hasOwnProperty(thisAnswer)) {
+        if(q == 0) {
+          thisDataSet[thisAnswer] = 1;
+        } else {
+          thisDataSet[thisAnswer] = {};
+        }
+      } else {
+        if(q == 0) {
+          thisDataSet[thisAnswer] += 1;
+        }
+      }
+
+      thisDataSet = thisDataSet[thisAnswer];
+    }
+  }
+  return dataCounter;
+}
+
+function create2dDataSets(dataCounter) {
+  var data = [];
+  var orderedAnswers = orderKeys(dataCounter);
+
+  for(var i in orderedAnswers) {
+    var yAxis = orderedAnswers[i];
+    var thisDataSet;
+
+    if(isObject(dataCounter[yAxis])) {
+      thisDataSet = [];
+      for(var xAxis in dataCounter[yAxis]) {
+        thisDataSet.push({ y: dataCounter[yAxis][xAxis], legendText: yAxis, label: xAxis });
+      }
+      thisDataSet.sort(function(a, b) {
+        return (a.label > b.label) ? 1 : -1;
+      });
+    } else {
+      thisDataSet = { y: dataCounter[yAxis], legendText: yAxis, label: yAxis };
+    }
+
+    data.push(thisDataSet);
+  }
+  return data;
+}
+
+function processQuestions2d(selectedQuestions, answers) {
+  selectedQuestions = selectedQuestions || getSelectedQuestions();
+  answers = answers || filteredAnswers;
+
+  var dataCounter = countAnswers(selectedQuestions, answers);
+  var data = create2dDataSets(dataCounter);
+
+  return data;
+}
+
 function processQuestions(selectedQuestions, answers) {
   var dataCounter = {};
   var data = [];
 
-  // TODO: fix
   var question = selectedQuestions[0];
-  //
 
-  for(p in answers) {
+  for(var p in answers) {
     var thisAnswer = answers[p][question];
     if(dataCounter.hasOwnProperty(thisAnswer)) {
       dataCounter[thisAnswer] += 1;
@@ -168,7 +244,7 @@ function processQuestions(selectedQuestions, answers) {
     }
   }
 
-  for(p in dataCounter) {
+  for(var p in dataCounter) {
     data.push({ y: dataCounter[p], legendText: p, label: p });
   }
 
@@ -269,17 +345,21 @@ function updateFilter() {
   drawGraph();
 }
 
-function drawGraph() {
+function getSelectedQuestions() {
   var selectedQuestions = [];
-  var chartTitle = "";
-  var values;
-
   for(var i in questionForms) {
     var thisQuestion = document.getElementById(questionForms[i]).value;
     if(thisQuestion != "null"){
       selectedQuestions.push(thisQuestion);
     }
   }
+  return selectedQuestions;
+}
+
+function drawGraph() {
+  var selectedQuestions = getSelectedQuestions();
+  var chartTitle = "";
+  var values;
 
   if(selectedQuestions.length > 0) {
     values = processQuestions(selectedQuestions, filteredAnswers);

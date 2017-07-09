@@ -167,8 +167,41 @@ function isObject(obj) {
   return obj === Object(obj);
 }
 
+function createAnswersCounter(tree, possibleAnswers) {
+  var theseAnswers = possibleAnswers[0];
+
+  for(var i in theseAnswers) {
+    var thisAnswer = theseAnswers[i];
+    if(possibleAnswers.length == 1) {
+      tree[thisAnswer] = 0;
+    } else {
+      tree[thisAnswer] = createAnswersCounter({}, possibleAnswers.slice(1));
+    }
+  }
+
+  return tree;
+}
+
+function getPossibleAnswers(selectedQuestions, answers) {
+  var possibleAnswers = [];
+
+  for(var q = (selectedQuestions.length - 1); q >= 0; q--) {
+    var thisQuestion = selectedQuestions[q];
+    var thisQuestionsPossibleAnswers = {};
+
+    for(var p in answers) {
+      var thisPerson = answers[p];
+      thisQuestionsPossibleAnswers[thisPerson[thisQuestion]] = 0;
+    }
+
+    possibleAnswers.push(Object.keys(thisQuestionsPossibleAnswers));
+  }
+
+  return possibleAnswers;
+}
+
 function countAnswers(selectedQuestions, answers) {
-  var dataCounter = {};
+  var dataCounter = createAnswersCounter({}, getPossibleAnswers(selectedQuestions, answers));
 
   for(var p in answers) {
     var thisDataSet = dataCounter;
@@ -177,21 +210,14 @@ function countAnswers(selectedQuestions, answers) {
       var thisQuestion = selectedQuestions[q];
       var thisAnswer = answers[p][thisQuestion];
 
-      if(!thisDataSet.hasOwnProperty(thisAnswer)) {
-        if(q == 0) {
-          thisDataSet[thisAnswer] = 1;
-        } else {
-          thisDataSet[thisAnswer] = {};
-        }
-      } else {
-        if(q == 0) {
-          thisDataSet[thisAnswer] += 1;
-        }
+      if(q == 0) {
+        thisDataSet[thisAnswer] += 1;
       }
 
       thisDataSet = thisDataSet[thisAnswer];
     }
   }
+
   return dataCounter;
 }
 
@@ -213,8 +239,7 @@ function create2dDataSets(dataCounter) {
       data.push(thisDataSet);
     } else {
       data[0] = data[0] || [];
-      var thisDataSet = { y: dataCounter[yAxis], legendText: yAxis, label: yAxis };
-      data[0].push(thisDataSet);
+      data[0].push({ y: dataCounter[yAxis], legendText: yAxis, label: yAxis });
     }
   }
   return data;

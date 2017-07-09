@@ -71,27 +71,22 @@ var questions = [
 
 var questionForms = ['question-0', 'question-1'];
 
-var pieGraphData = [
-  {
-    type: "pie",
-    indexLabelFontFamily: "Garamond",
-    indexLabelFontSize: 20,
-    indexLabel: "#percent%",
-    startAngle: 0,
-    showInLegend: true,
-    toolTipContent:"{label}: {y}",
-    dataPoints: []
-  }
-];
+var pieGraphData = {
+  type: "pie",
+  indexLabelFontFamily: "Garamond",
+  indexLabelFontSize: 20,
+  indexLabel: "#percent%",
+  startAngle: 0,
+  showInLegend: true,
+  toolTipContent:"{label}: {y}"
+};
 
-var columnGraphData = [
-  {
-    type: "stackedColumn",
-    showInLegend: true,
-    toolTipContent:"{legendText}: {y}",
-    dataPoints: []
-  }
-];
+var columnGraphData = {
+  type: "stackedColumn",
+  showInLegend: true,
+  legendText: "{legendText}",
+  toolTipContent:"{legendText}: {y}"
+};
 
 function initializeGraph(){
   myGraph = new CanvasJS.Chart("chart-container", {
@@ -108,7 +103,7 @@ function initializeGraph(){
       fontFamily: "Helvetica"
     },
     theme: "theme2",
-    data: pieGraphData
+    data: [pieGraphData]
   });
   myGraph.render();
 }
@@ -370,15 +365,14 @@ function drawGraph() {
   if(selectedQuestions.length > 1) {
     myGraph.set('data', []);
     for(var i in dataSets) {
-      myGraph.addTo('data', columnGraphData.slice());
+      myGraph.addTo('data', JSON.parse(JSON.stringify(columnGraphData)));
+      myGraph.data[i].set('dataPoints', dataSets[i]);
     }
   } else {
-    myGraph.set('data', pieGraphData);
+    myGraph.set('data', [pieGraphData]);
+    myGraph.data[0].set('dataPoints', dataSets[0]);
   }
 
-  for(var i in dataSets) {
-    myGraph.data[i].set('dataPoints', dataSets[i]);
-  }
 }
 
 function processEmotions(answers) {

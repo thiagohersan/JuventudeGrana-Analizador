@@ -1,6 +1,6 @@
 var answers;
 var filteredAnswers;
-var pieGraph;
+var myGraph;
 
 var emotionDuos = [
   "a) Responsa x Zoeira",
@@ -71,8 +71,29 @@ var questions = [
 
 var questionForms = ['question-0', 'question-1'];
 
+var pieGraphData = [
+  {
+    type: "pie",
+    indexLabelFontFamily: "Garamond",
+    indexLabelFontSize: 20,
+    indexLabel: "#percent%",
+    startAngle: 0,
+    showInLegend: true,
+    toolTipContent:"{label}: {y}",
+    dataPoints: []
+  }
+];
+
+var columnGraphData = [
+  {
+    type: "stackedColumn",
+    toolTipContent:"{label}: {y}",
+    dataPoints: []
+  }
+];
+
 function initializeGraph(){
-  pieGraph = new CanvasJS.Chart("chart-container", {
+  myGraph = new CanvasJS.Chart("chart-container", {
     title: {
       text: "",
       fontFamily: "Helvetica",
@@ -86,20 +107,9 @@ function initializeGraph(){
       fontFamily: "Helvetica"
     },
     theme: "theme2",
-    data: [
-      {
-        type: "pie",
-        indexLabelFontFamily: "Garamond",
-        indexLabelFontSize: 20,
-        indexLabel: "#percent%",
-        startAngle: 0,
-        showInLegend: true,
-        toolTipContent:"{legendText}: {y}",
-        dataPoints: []
-      }
-    ]
+    data: pieGraphData
   });
-  pieGraph.render();
+  myGraph.render();
 }
 
 window.onload = function() {
@@ -141,7 +151,7 @@ function createQuestionForm(questions, questionNameId) {
   questionContainer.appendChild(selectElement);
 }
 
-function processQuestion(selectedQuestions, answers) {
+function processQuestions(selectedQuestions, answers) {
   var dataCounter = {};
   var data = [];
 
@@ -159,7 +169,7 @@ function processQuestion(selectedQuestions, answers) {
   }
 
   for(p in dataCounter) {
-    data.push({ y: dataCounter[p], legendText: p });
+    data.push({ y: dataCounter[p], legendText: p, label: p });
   }
 
   data.sort(function(a, b) {
@@ -260,8 +270,9 @@ function updateFilter() {
 }
 
 function drawGraph() {
-  var values;
   var selectedQuestions = [];
+  var chartTitle = "";
+  var values;
 
   for(var i in questionForms) {
     var thisQuestion = document.getElementById(questionForms[i]).value;
@@ -270,18 +281,24 @@ function drawGraph() {
     }
   }
 
-  pieGraph.title.set('text', '', false);
   if(selectedQuestions.length > 0) {
-    values = processQuestion(selectedQuestions, filteredAnswers);
-    var chartTitle = "";
-    for(var i in selectedQuestions) {
-      chartTitle += " ❤ "+selectedQuestions[i];
-    }
-    pieGraph.title.set('text', chartTitle.substr(3), false);
+    values = processQuestions(selectedQuestions, filteredAnswers);
   }
 
-  pieGraph.data[0].set('dataPoints', values, false);
-  pieGraph.render();
+  for(var i in selectedQuestions) {
+    chartTitle += " ❤ "+selectedQuestions[i];
+  }
+  myGraph.title.set('text', chartTitle.substr(3), false);
+
+  if(selectedQuestions.length > 1) {
+    myGraph.set('data', []);
+    for(var i in selectedQuestions) {
+      myGraph.addTo('data', columnGraphData.slice());
+    }
+  } else {
+    myGraph.set('data', pieGraphData);
+  }
+  myGraph.data[0].set('dataPoints', values);
 }
 
 function processEmotions(answers) {

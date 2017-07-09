@@ -143,6 +143,9 @@ function processQuestion(question, answers) {
     data.push({ y: dataCounter[p], legendText: p });
   }
 
+  data.sort(function(a, b) {
+    return (a.legendText > b.legendText) ? 1 : -1;
+  });
   return data;
 }
 

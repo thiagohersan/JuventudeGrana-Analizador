@@ -1,6 +1,6 @@
 var answers;
 var filteredAnswers;
-var graph;
+var pieGraph;
 
 var emotionDuos = [
   "a) Responsa x Zoeira",
@@ -71,7 +71,7 @@ var questions = [
 ];
 
 function initializeGraph(){
-  graph = new CanvasJS.Chart("chart-container", {
+  pieGraph = new CanvasJS.Chart("chart-container", {
     title: { text: "" },
     legend: {
       verticalAlign: "center",
@@ -93,7 +93,7 @@ function initializeGraph(){
       }
     ]
   });
-  graph.render();
+  pieGraph.render();
 }
 
 window.onload = function() {
@@ -243,13 +243,13 @@ function updateFilter() {
 function drawGraph() {
   var values;
   var question = document.getElementById('question-x').value;
-  graph.title.set('text', '', false);
+  pieGraph.title.set('text', '', false);
   if(question != "null") {
     values = processQuestion(question, filteredAnswers);
-    graph.title.set('text', question, false);
+    pieGraph.title.set('text', question, false);
   }
-  graph.data[0].set('dataPoints', values, false);
-  graph.render();
+  pieGraph.data[0].set('dataPoints', values, false);
+  pieGraph.render();
 }
 
 function processEmotions(answers) {

@@ -1,5 +1,6 @@
 var answers;
 var filteredAnswers;
+var graph;
 
 var emotionDuos = [
   "a) Responsa x Zoeira",
@@ -70,16 +71,42 @@ var questions = [
   "Sou mais criterioso para gastar a grana que ganhei trabalhando do que o dinheiro que veio fácil."
 ];
 
+function initializeGraph(){
+  graph = new CanvasJS.Chart("chart-container", {
+    title: { text: "" },
+    legend: {
+      verticalAlign: "center",
+      horizontalAlign: "left",
+      fontSize: 20,
+      fontFamily: "Helvetica"
+    },
+    theme: "theme2",
+    data: [
+      {
+        type: "pie",
+        indexLabelFontFamily: "Garamond",
+        indexLabelFontSize: 20,
+        indexLabel: "#percent%",
+        startAngle: 0,
+        showInLegend: true,
+        toolTipContent:"{legendText}: {y}",
+        dataPoints: []
+      }
+    ]
+  });
+  graph.render();
+}
+
 window.onload = function() {
-  loadJSON("data/baby.json", function(json) {
+  loadJSON("data/20170708.json", function(json) {
     answers = processEmotions(JSON.parse(json));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());
     questions = questions.concat(emotionDuos);
     createQuestionForm(questions, 'question-x');
-  });
 
-  // create graphs
+    initializeGraph();
+  });
 }
 
 function createQuestionForm(questions, elementId) {
@@ -101,16 +128,22 @@ function createQuestionForm(questions, elementId) {
 }
 
 function processQuestion(question, answers) {
-  var data = {};
+  var dataCounter = {};
+  var data = [];
 
   for(p in answers) {
     var thisAnswer = answers[p][question];
-    if(data.hasOwnProperty(thisAnswer)) {
-      data[thisAnswer] += 1;
+    if(dataCounter.hasOwnProperty(thisAnswer)) {
+      dataCounter[thisAnswer] += 1;
     } else {
-      data[thisAnswer] = 1;
+      dataCounter[thisAnswer] = 1;
     }
   }
+
+  for(p in dataCounter) {
+    data.push({ y: dataCounter[p], legendText: p });
+  }
+
   return data;
 }
 
@@ -208,10 +241,13 @@ function updateFilter() {
 function drawGraph() {
   var values;
   var question = document.getElementById('question-x').value;
+  graph.title.set('text', '', false);
   if(question != "null") {
     values = processQuestion(question, filteredAnswers);
-    console.log(values);
+    graph.title.set('text', question, false);
   }
+  graph.data[0].set('dataPoints', values, false);
+  graph.render();
 }
 
 function processEmotions(answers) {

@@ -54,7 +54,6 @@ var questions = [
   "31 - O que você têm mais dificuldade de entender no sistema bancário?",
   "32 - Você consegue juntar grana?",
   "33 - Você procura viver de modo a depender menos do dinheiro?",
-  "34 - Quais desses meios alternativos você usa?",
   "A falta de dinheiro me impede de estar em lugares que eu gostaria de estar.",
   "Compro algo que está em promoção mesmo sem precisar.",
   "Dou mais valor para presentes que custaram caro.",

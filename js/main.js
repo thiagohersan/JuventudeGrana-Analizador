@@ -69,8 +69,7 @@ var questions = [
   "Sou mais criterioso para gastar a grana que ganhei trabalhando do que o dinheiro que veio fácil."
 ];
 
-//var questionForms = ['question-0', 'question-1'];
-var questionForms = ['question-0'];
+var questionForms = ['question-0', 'question-1'];
 
 var pieGraphData = [
   {
@@ -114,7 +113,7 @@ function initializeGraph(){
 }
 
 window.onload = function() {
-  loadJSON("data/20170708.json", function(json) {
+  loadJSON("data/baby.json", function(json) {
     answers = processEmotions(JSON.parse(json));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());

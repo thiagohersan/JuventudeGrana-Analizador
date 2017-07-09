@@ -1,6 +1,25 @@
 var answers;
 var filteredAnswers;
 
+var emotionDuos = [
+  "a) Responsa x Zoeira",
+  "b) Alegria x Tristeza",
+  "c) Angústia x Tranquilidade",
+  "d) Poder x Inferioridade",
+  "e) Liberdade x Prisão",
+  "f) Dependência x Independência",
+  "g) Obrigação x Possibilidade",
+  "h) Segurança x Insegurança",
+  "i) Prazer x Desprazer",
+  "j) Dominação x Submissão",
+  "k) Conforto x Incômodo",
+  "l) Acesso x Isolamento",
+  "m) Solidão x Companhia",
+  "n) Humildade x Ostentação",
+  "o) Passado x Futuro",
+  "p) Vontade x Realização"
+];
+
 var filters = [
   "2- Qual a sua idade?",
   "4 - Qual é sua raça?",
@@ -48,23 +67,7 @@ var questions = [
   "Não me importo em me endividar para ter algo que quero muito.",
   "Não ter dinheiro me dá vergonha.",
   "É impossível ser feliz sem grana.",
-  "Sou mais criterioso para gastar a grana que ganhei trabalhando do que o dinheiro que veio fácil.",
-  "a)",
-  "b)",
-  "c)",
-  "d)",
-  "e)",
-  "f)",
-  "g)",
-  "h)",
-  "i)",
-  "j)",
-  "k)",
-  "l)",
-  "m)",
-  "n)",
-  "o)",
-  "p)"
+  "Sou mais criterioso para gastar a grana que ganhei trabalhando do que o dinheiro que veio fácil."
 ];
 
 window.onload = function() {
@@ -72,6 +75,7 @@ window.onload = function() {
     answers = processEmotions(JSON.parse(json));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());
+    questions = questions.concat(emotionDuos);
     createQuestionForm(questions, 'question-x');
   });
 
@@ -219,8 +223,8 @@ function processEmotions(answers) {
 
   for(var i in answers) {
     var positiveCount = 0;
-    for(var q='a'.charCodeAt(0); q<='p'.charCodeAt(0); q++) {
-      if(positiveWords.indexOf(answers[i][String.fromCharCode(q)+')']) > -1) {
+    for(var q in emotionDuos) {
+      if(positiveWords.indexOf(answers[i][emotionDuos[q]]) > -1) {
         positiveCount++;
       }
     }

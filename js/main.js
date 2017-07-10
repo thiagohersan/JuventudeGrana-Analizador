@@ -351,7 +351,9 @@ function getSelectedQuestions() {
 function drawGraph() {
   var selectedQuestions = getSelectedQuestions();
   var chartTitle = "";
-  var dataSets;
+  var dataSets = [[]];
+
+  var relativeCheckbox = document.getElementById('relative-comparison');
 
   if(selectedQuestions.length > 0) {
     dataSets = processQuestions(selectedQuestions, filteredAnswers);
@@ -367,6 +369,9 @@ function drawGraph() {
     for(var i in dataSets) {
       myGraph.addTo('data', JSON.parse(JSON.stringify(columnGraphData)));
       myGraph.data[i].set('dataPoints', dataSets[i]);
+      if(relativeCheckbox.checked) {
+        myGraph.data[i].set('type', 'stackedColumn100');
+      }
     }
   } else {
     myGraph.set('data', [pieGraphData]);

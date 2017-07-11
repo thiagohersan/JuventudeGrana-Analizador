@@ -25,6 +25,7 @@ var filters = [
   "2- Qual a sua idade?",
   "4 - Qual é sua raça?",
   "Qual o seu gênero?",
+  "10 - Quanto você ganha por mês?",
   "7 - Você se considera rico ou pobre?",
   "24 - Em qual estado emocional você gasta mais?",
   "Relacionamento emocional com dinheiro"
@@ -283,7 +284,7 @@ function createFilterForms(filterOptions) {
 
     var nullOption = document.createElement('option');
     nullOption.setAttribute('value', "null");
-    nullOption.innerHTML = i;
+    nullOption.innerHTML = i.replace(/^[0-9]+ ?\- /g,'');
     selectElement.appendChild(nullOption);
 
     for(var j in filterOptions[i]) {

@@ -287,6 +287,8 @@ function createFilterForms(filterOptions) {
     nullOption.innerHTML = i.replace(/^[0-9]+ ?\- /g,'');
     selectElement.appendChild(nullOption);
 
+    filterOptions[i].sort();
+
     for(var j in filterOptions[i]) {
       var thisOption = document.createElement('option');
       thisOption.setAttribute('value', filterOptions[i][j]);

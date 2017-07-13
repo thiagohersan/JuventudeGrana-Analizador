@@ -340,7 +340,10 @@ function processFilter(data, filterOptions) {
       pushPerson = pushPerson && (activeOption == personsAnswer);
     }
 
-    if(pushPerson) {
+    var isEmptyAnswer = person['Indicação de data e hora'] == '';
+    isEmptyAnswer |= String(person['2- Qual a sua idade?']).indexOf('mais de 24 anos') != -1;
+
+    if(pushPerson && !isEmptyAnswer) {
       filteredData.push(person);
     }
   }

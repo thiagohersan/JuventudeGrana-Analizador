@@ -21,6 +21,16 @@ var emotionDuos = [
   "p) Vontade x Realização"
 ];
 
+var educationQuestions = [
+  "5 - Qual seu grau de escolaridade? [Ensino fundamental incompleto]",
+  "5 - Qual seu grau de escolaridade? [Ensino fundamental completo]",
+  "5 - Qual seu grau de escolaridade? [Ensino médio incompleto]",
+  "5 - Qual seu grau de escolaridade? [Ensino médio completo]",
+  "5 - Qual seu grau de escolaridade? [Ensino superior incompleto]",
+  "5 - Qual seu grau de escolaridade? [Ensino superior completo]",
+  "5 - Qual seu grau de escolaridade? [Pós graduação]"
+];
+
 var filters = [
   "2- Qual a sua idade?",
   "4 - Qual é sua raça?",
@@ -28,7 +38,9 @@ var filters = [
   "10 - Quanto você ganha por mês?",
   "7 - Você se considera rico ou pobre?",
   "24 - Em qual estado emocional você gasta mais?",
-  "Relacionamento emocional com dinheiro"
+  "Relacionamento emocional com dinheiro",
+  "Educação - pública/particular",
+  "Educação - último grau de escolaridade"
 ];
 
 var questions = [
@@ -111,7 +123,7 @@ function initializeGraph(){
 
 window.onload = function() {
   loadJSON("data/20170708.json", function(json) {
-    answers = processEmotions(JSON.parse(json));
+    answers = processEducation(processEmotions(JSON.parse(json)));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());
     questions = questions.concat(emotionDuos);
@@ -400,6 +412,25 @@ function processEmotions(answers) {
 
     var relacionamento = (positiveCount >= (positiveWords.length / 2)) ? 'Positivo' : 'Negativo';
     answers[i]['Relacionamento emocional com dinheiro'] = relacionamento;
+  }
+
+  return answers;
+}
+
+function processEducation(answers) {
+  for(var i in answers) {
+    var person = answers[i];
+    for(var j in educationQuestions) {
+      var question = educationQuestions[j];
+      var cleanQuestion = question.match(/\[.+\]/g)[0].slice(1,-1);
+      if(person[question].search('pública') > -1) {
+        person['Educação - pública/particular'] = 'Pública';
+        person['Educação - último grau de escolaridade'] = cleanQuestion;
+      } else if(person[question].search('particular') > -1) {
+        person['Educação - pública/particular'] = 'Particular';
+        person['Educação - último grau de escolaridade'] = cleanQuestion;
+      }
+    }
   }
 
   return answers;

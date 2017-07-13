@@ -69,6 +69,8 @@ var questions = [
   "A falta de dinheiro me impede de estar em lugares que eu gostaria de estar.",
   "Compro algo que está em promoção mesmo sem precisar.",
   "Dou mais valor para presentes que custaram caro.",
+  "Educação - pública/particular",
+  "Educação - último grau de escolaridade",
   "Eu tenho medo de lidar com grana.",
   "Gosto mais de uma coisa comprada nova do que algo trocado de graça.",
   "Jovens que trabalham e têm responsabilidade sobre a renda familiar têm mais noção do valor do dinheiro.",

@@ -124,7 +124,7 @@ function initializeGraph(){
 }
 
 window.onload = function() {
-  loadJSON("data/20170712.json", function(json) {
+  loadJSON("data/20170719.json", function(json) {
     answers = processEducation(processEmotions(JSON.parse(json)));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());

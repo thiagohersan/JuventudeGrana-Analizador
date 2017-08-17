@@ -46,6 +46,7 @@ var filters = [
 var questions = [
   "2- Qual a sua idade?",
   "4 - Qual é sua raça?",
+  "Qual o seu gênero?",
   "7 - Você se considera rico ou pobre?",
   "8 - Você ajuda a pagar as contas da sua casa?",
   "9 - Quem é o principal responsável por bancar a sua casa?",
@@ -124,7 +125,7 @@ function initializeGraph(){
 }
 
 window.onload = function() {
-  loadJSON("data/20170719.json", function(json) {
+  loadJSON("data/20170816.json", function(json) {
     answers = processEducation(processEmotions(JSON.parse(json)));
     createFilterForms(createFilterOptions(filters, answers));
     filteredAnswers = processFilter(answers, getActiveFilterOptions());
